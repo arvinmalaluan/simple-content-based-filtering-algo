@@ -1,0 +1,102 @@
+def connect(self):
+        print(self.channel_name + ' opened')
+        self.room_group_name = 'broadcast'
+        async_to_sync(self.channel_layer.group_add)(
+            self.room_group_name, self.channel_name
+        )
+        self.accept()
+
+    def disconnect(self, close_code):
+        print(self.channel_name + ' closed')
+        async_to_sync(self.channel_layer.group_discard)(
+            self.room_group_name, self.channel_name
+        )
+
+    def receive(self, text_data):
+        data = json.loads(text_data)
+
+        if data['text']['action'] == "fetch_all":
+            try:
+                posts = models.Post.objects.prefetch_related(
+                    'comments', 'engagements').all()
+                serializer = serializers.PostDetailsSerializer(
+                    posts, many=True)
+
+                self.send_chat_message(serializer.data)
+
+            except:
+                print('error occured')
+                pass
+
+    def send_chat_message(self, message):
+        # Send message to room group
+        async_to_sync(self.channel_layer.group_send)(
+            self.room_group_name,
+            {
+                'type': 'chat_message',
+                'message': message,
+            }
+        )
+
+    def chat_message(self, event):
+        # Receive message from room group
+        text = event['message']
+
+        # Send message to WebSocket
+        self.send(text_data=json.dumps({
+            'text': text,
+        }))
+
+    def new_post(self, event):
+        self.send(text_data=event['text'])
+
+    # def connect(self):
+    #     self.room_group_name = 'broadcast'
+
+    #    # Join room group
+    #     async_to_sync(self.channel_layer.group_add)(
+    #         self.room_group_name,
+    #         self.channel_name
+    #     )
+
+    #     self.accept()
+
+    # def disconnect(self, close_code):
+    #     pass
+
+    # def receive(self, text_data):
+    #     data = json.loads(text_data)
+    #     action = data['text']['action']
+
+    #     print(action)
+
+    #     if action == 'fetch_all':
+    #         try:
+    #             posts = models.Post.objects.prefetch_related(
+    #                 'comments', 'engagements').all()
+    #             serializer = serializers.PostDetailsSerializer(
+    #                 posts, many=True)
+    #             self.send_chat_message(serializer.data)
+
+    #         except:
+    #             print('error occured')
+    #             pass
+
+    def send_chat_message(self, message):
+        # Send message to room group
+        async_to_sync(self.channel_layer.group_send)(
+            self.room_group_name,
+            {
+                'type': 'chat_message',
+                'message': message,
+            }
+        )
+
+    def chat_message(self, event):
+        # Receive message from room group
+        text = event['message']
+
+        # Send message to WebSocket
+        self.send(text_data=json.dumps({
+            'text': text,
+        }))
