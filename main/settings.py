@@ -109,9 +109,14 @@ DATABASES = {
 
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': "channels.layers.InMemoryChannelLayer",
+        'BACKEND': "channels_redis.core.RedisChannelLayer",
+        'CONFIG': {
+            'hosts': [(os.environ.get('REDIS_URL'), 6379)]
+        }
     },
 }
+
+# daphne -b 0.0.0.0 -p 8001 myproject.asgi:application
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
