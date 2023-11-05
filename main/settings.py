@@ -107,12 +107,17 @@ DATABASES = {
     'default': dj_database_url.parse("postgres://peso_db_user:z9KfPu37AJciGnNM10brN9Z32OWEikad@dpg-cl2e99quuipc73d5bs5g-a/peso_db")
 }
 
+redis_host = os.environ.get('REDIS_HOST', 'localhost')
+
+# http://channels.readthedocs.org/en/latest/deploying.html#setting-up-a-channel-backend
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': "channels_redis.core.RedisChannelLayer",
-        'CONFIG': {
-            'hosts': [(os.environ.get('REDIS_URL', '0.0.0.0'), 6379)]
-        }
+    "default": {
+        # This example app uses the Redis channel layer implementation asgi_redis
+        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(redis_host, 6379)],
+        },
+        "ROUTING": "multichat.routing.channel_routing",
     },
 }
 
