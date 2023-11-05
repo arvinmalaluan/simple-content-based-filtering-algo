@@ -13,6 +13,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.contrib.auth.hashers import check_password
 
+from . import functions
 
 def create_token(data):
 
@@ -67,6 +68,11 @@ def get_user_info(request):
     account = Account.objects.get(id=request.data['id'])
     serializer = UserAccountSerializer(account)
 
+    try:
+        functions.sendEmailTo()
+    except Exception as e:
+        print('error', e)
+
     return Response({'data': serializer.data})
 
 
@@ -80,7 +86,13 @@ def get_all_info(request):
     account = Account.objects.all()
     serializer = UserAccountSerializer(account, many=True).data
 
-    return Response({'data': serializer})
+    try:
+        functions.sendEmailTo()
+        return Response({'data': serializer})
+    except:
+        print('error')
+        return Response({'data': 'error occurred'})
+
 
 
 @api_view(['PUT'])
