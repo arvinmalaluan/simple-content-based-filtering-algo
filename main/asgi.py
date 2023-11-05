@@ -1,4 +1,3 @@
-import errands.routing
 from chat.routing import websocket_urlpatterns
 import os
 import django
