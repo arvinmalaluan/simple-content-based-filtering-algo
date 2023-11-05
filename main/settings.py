@@ -104,6 +104,12 @@ DATABASES = {
     'default': dj_database_url.parse("postgres://peso_db_user:z9KfPu37AJciGnNM10brN9Z32OWEikad@dpg-cl2e99quuipc73d5bs5g-a/peso_db")
 }
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
+
 # http://channels.readthedocs.org/en/latest/deploying.html#setting-up-a-channel-backend
 # CHANNEL_LAYERS = {
 #     "default": {
