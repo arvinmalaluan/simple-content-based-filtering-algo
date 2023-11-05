@@ -15,6 +15,7 @@ from django.contrib.auth.hashers import check_password
 
 from . import functions
 
+
 def create_token(data):
 
     refresh = RefreshToken.for_user(data)
@@ -85,14 +86,7 @@ class getAccount(generics.RetrieveUpdateAPIView):
 def get_all_info(request):
     account = Account.objects.all()
     serializer = UserAccountSerializer(account, many=True).data
-
-    try:
-        functions.sendEmailTo()
-        return Response({'data': serializer})
-    except:
-        print('error')
-        return Response({'data': 'error occurred'})
-
+    return Response({'data': serializer})
 
 
 @api_view(['PUT'])
