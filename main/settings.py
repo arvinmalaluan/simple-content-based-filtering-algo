@@ -23,9 +23,6 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5173'
 ]
 
-
-# Application definition
-
 INSTALLED_APPS = [
     "daphne",
     "channels",
@@ -107,19 +104,17 @@ DATABASES = {
     'default': dj_database_url.parse("postgres://peso_db_user:z9KfPu37AJciGnNM10brN9Z32OWEikad@dpg-cl2e99quuipc73d5bs5g-a/peso_db")
 }
 
-redis_host = os.environ.get('REDIS_HOST', 'localhost')
-
 # http://channels.readthedocs.org/en/latest/deploying.html#setting-up-a-channel-backend
-CHANNEL_LAYERS = {
-    "default": {
-        # This example app uses the Redis channel layer implementation asgi_redis
-        "BACKEND": "asgi_redis.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [(redis_host, 10000)],
-        },
-        "ROUTING": "multichat.routing.channel_routing",
-    },
-}
+# CHANNEL_LAYERS = {
+#     "default": {
+#         # This example app uses the Redis channel layer implementation asgi_redis
+#         "BACKEND": "asgi_redis.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [('redis://host:10000', 6379)],
+#         },
+#         "ROUTING": "multichat.routing.channel_routing",
+#     },
+# }
 
 # daphne -b 0.0.0.0 -p 8001 myproject.asgi:application
 
