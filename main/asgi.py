@@ -14,8 +14,7 @@ application = ProtocolTypeRouter(
         'websocket': AuthMiddlewareStack(
             URLRouter(
                 # Import websocket_urlpatterns here, inside the URLRouter
-                import chat.routing
-                chat.routing.websocket_urlpatterns
+                from chat.routing import websocket_urlpatterns
             )
         )
     }
