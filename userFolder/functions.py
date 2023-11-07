@@ -1,5 +1,6 @@
 from django.core.mail import send_mail
 
+
 def sendEmailTo():
     subject = 'Hello, this is the subject'
     message = 'This is the message body.'

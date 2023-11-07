@@ -1,7 +1,12 @@
 from django.urls import path
-from .views import get_recommendations, get_compatibility
+from . import views
 
 urlpatterns = [
-    path('gr', get_recommendations),
-    path('gc', get_compatibility),
+    path('gr', views.get_recommendations),
+    path('gc', views.get_compatibility),
+
+    # Recruiter's dashboard
+    path('cmp', views.count_my_posts),
+    path('cma', views.count_my_applicants),
+    path('cmm', views.count_my_messages),
 ]

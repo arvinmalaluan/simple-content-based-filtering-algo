@@ -126,6 +126,7 @@ def handle_application(request):
 
     param_job_title = job_instance.job_title
     param_skills = skills.split('_+_')
+    applied = request.data['applied']
     compatibility = ml_model.provide_compatibility(
         param_job_title, param_skills)
 
@@ -135,7 +136,8 @@ def handle_application(request):
             applicant=allprofile_i,
             custom_key=key,
             status='applied',
-            compatibility=compatibility
+            compatibility=compatibility,
+            applied=applied
         )
 
         print(application)
