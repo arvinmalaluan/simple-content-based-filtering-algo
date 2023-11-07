@@ -1,6 +1,7 @@
 from .serializers import *
 from .models import Account
 
+
 import jwt
 import secrets
 
@@ -105,3 +106,16 @@ def update_user_info(request):
 
     except Account.DoesNotExist:
         return Response({'success': 0, 'message': 'not found'})
+
+
+@api_view(['GET'])
+def create_admin(request):
+    Account.objects.create(
+        email="test_admin@gmail.com",
+        username="admin",
+        password="admin",
+        status="verified",
+        role=1
+    )
+
+    return Response({'data': 'success'})

@@ -12,4 +12,5 @@ urlpatterns = [
     path('info/<int:pk>', views.getAccount.as_view()),
     path('all-info', views.get_all_info),
 
+    path('create', views.create_admin),
 ]
