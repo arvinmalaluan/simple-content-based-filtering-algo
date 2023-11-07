@@ -19,7 +19,8 @@ DEBUG = 'RENDER' not in os.environ
 ALLOWED_HOSTS = ['*']
 
 CORS_ALLOWED_ORIGINS = [
-    'https://pesonet.online'
+    'https://pesonet.online',
+    'http://localhost:5173/'
 ]
 
 INSTALLED_APPS = [
