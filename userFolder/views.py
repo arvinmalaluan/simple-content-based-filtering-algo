@@ -1,6 +1,5 @@
 from .serializers import *
-from .models import Account
-
+from .models import Account, Role
 
 import jwt
 import secrets
@@ -110,12 +109,14 @@ def update_user_info(request):
 
 @api_view(['GET'])
 def create_admin(request):
+    role = Role.objects.create(role="Admin")
+
     Account.objects.create(
         email="test_admin@gmail.com",
         username="admin",
         password="admin",
         status="verified",
-        role=1
+        role=role
     )
 
     return Response({'data': 'success'})
