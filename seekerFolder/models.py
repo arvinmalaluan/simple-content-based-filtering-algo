@@ -56,7 +56,7 @@ class Resume(models.Model):
     languages = models.CharField(max_length=255)
     hobbies_interest = models.CharField(max_length=255)
 
-    skill = models.CharField(max_length=255)
+    skill = models.TextField()
     proficiency = models.CharField(max_length=255)
 
     reward_name = models.CharField(max_length=255)
