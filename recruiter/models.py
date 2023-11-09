@@ -36,7 +36,6 @@ class JobPost(models.Model):
     status = models.TextField(null=True, blank=True)
     name = models.TextField(null=True, blank=True)
     location = models.TextField(null=True, blank=True)
-    engagement = models.CharField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         self.name = self.allprofile.name
