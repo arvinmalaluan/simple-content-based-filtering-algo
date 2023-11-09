@@ -18,3 +18,9 @@ class TTCScoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.TimeToGetCompatibilityScore
         fields = '__all__'
+
+
+class LogUE(serializers.ModelSerializer):
+    class Meta:
+        model = models.LogUserEngagement
+        fields = '__all__'

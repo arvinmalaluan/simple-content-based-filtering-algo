@@ -18,4 +18,5 @@ urlpatterns = [
     path('files/<int:pk>', views.U_Documents.as_view()),
     path('process-compatibility', views.G_TTGC.as_view()),
     path('process-recommendation', views.G_RPTG.as_view()),
+    path('increment-views', views.G_LUE.as_view())
 ]
