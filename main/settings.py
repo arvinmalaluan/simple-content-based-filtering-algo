@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'recruiter',
 
     'chat',
-    'analytics'
+    'analytics',
+    'adminpage'
 ]
 
 REST_FRAMEWORK = {
@@ -88,15 +89,15 @@ ASGI_APPLICATION = 'main.asgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'peso',
-#         'USER': 'postgres',
-#         'PASSWORD': 'secret',
-#         'HOST': 'localhost',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'peso',
+        'USER': 'postgres',
+        'PASSWORD': 'secret',
+        'HOST': 'localhost',
+    }
+}
 
 DATABASES = {
     'default': dj_database_url.parse("postgres://peso_db_user:z9KfPu37AJciGnNM10brN9Z32OWEikad@dpg-cl2e99quuipc73d5bs5g-a/peso_db")
