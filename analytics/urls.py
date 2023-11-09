@@ -9,4 +9,7 @@ urlpatterns = [
     path('cmp', views.count_my_posts),
     path('cma', views.count_my_applicants),
     path('cmm', views.count_my_messages),
+
+    # Seeker's dashboard
+    path('sgs', views.stat_for_seekers),
 ]

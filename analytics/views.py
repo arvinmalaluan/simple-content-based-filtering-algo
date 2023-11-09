@@ -7,6 +7,7 @@ import numpy as np
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Count
+from datetime import datetime, timezone
 
 from recruiter.models import JobPost, Applicants
 from chat.models import Messages
@@ -53,10 +54,9 @@ def count_my_posts(request):
     day_counts = []
 
     for i in range(7):
-        date = timezone.now() - timedelta(days=i)
-        next_date = timezone.now() - timedelta(days=i-1)
+        date = datetime.now() - timedelta(days=i)
         count = JobPost.objects.filter(
-            allprofile=user_id, created__range=(date, next_date)).count()
+            allprofile=user_id, created__date=(date)).count()
         day_counts.append({
             "date": date.strftime("%Y-%m-%d"),
             "count": count
@@ -76,10 +76,9 @@ def count_my_applicants(request):
     day_counts = []
 
     for i in range(7):
-        date = timezone.now() - timedelta(days=i)
-        next_date = timezone.now() - timedelta(days=i-1)
+        date = datetime.now() - timedelta(days=i)
         count = Applicants.objects.filter(
-            job__id__in=job_ids, applied__range=(date, next_date)).count()
+            job__id__in=job_ids, applied__date=date,).count()
         day_counts.append({
             "date": date.strftime("%Y-%m-%d"),
             "count": count
@@ -93,8 +92,8 @@ def count_my_applicants(request):
 
 @api_view(['POST'])
 def count_my_messages(request):
-    user_id = request.data['id']  # Replace with the actual user ID
-    end_date = timezone.now()
+    user_id = request.data['id']
+    end_date = datetime.now()
     start_date = end_date - timedelta(days=6)
 
     messages_counts = Messages.objects.filter(
@@ -120,3 +119,23 @@ def count_my_messages(request):
     day_counts = sorted(day_counts, key=lambda x: x['date'])
 
     return Response({"data": day_counts})
+
+
+@api_view(['POST'])
+def stat_for_seekers(request):
+    user_id = request.data['id']
+    today = datetime.now(timezone.utc).date()
+    unique_message_count = Messages.objects.filter(
+        receiver=user_id, message_created__date=today).values('conversation').distinct().count()
+
+    unique_applied_count = Applicants.objects.filter(
+        applicant=user_id, status="applied").count()
+
+    unique_rejected_count = Applicants.objects.filter(
+        applicant=user_id, status="rejected").count()
+
+    pending_interview_count = Applicants.objects.filter(
+        applicant=user_id, status="applied", interview__date__gt=today
+    ).count()
+
+    return Response({"count_message": unique_message_count, "count_applied": unique_applied_count, "count_rejected": unique_rejected_count, "count_pending_interviews": pending_interview_count})
