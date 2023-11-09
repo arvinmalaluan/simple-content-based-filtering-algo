@@ -1,6 +1,10 @@
 from django.db import models
 from userFolder.models import Account
 
+from github import Github
+import base64
+import os
+
 
 class AllProfile(models.Model):
     account = models.IntegerField(primary_key=True, blank=True)
@@ -20,6 +24,21 @@ class AllProfile(models.Model):
         max_length=255, null=True, blank=True)
     comp_overview = models.CharField(max_length=255, null=True, blank=True)
     site_link = models.CharField(max_length=255, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if self.photo:
+            g = Github("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")
+            repo = g.get_user().get_repo("github-as-static-assets-repository")
+            file_path = self.photo.path
+            file_name = os.path.basename(file_path)
+
+            with open(file_path, 'rb') as file:
+                content = file.read()
+
+            repo.create_file("images/" + file_name,
+                             "uploading an image", base64.b64encode(content))
 
     @classmethod
     def get_profiles_with_role(cls, role):
