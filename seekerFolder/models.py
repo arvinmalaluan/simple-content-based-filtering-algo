@@ -24,6 +24,7 @@ class AllProfile(models.Model):
         max_length=255, null=True, blank=True)
     comp_overview = models.CharField(max_length=255, null=True, blank=True)
     site_link = models.CharField(max_length=255, null=True, blank=True)
+    gender = models.CharField(max_length=255, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

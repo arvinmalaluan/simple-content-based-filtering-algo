@@ -1,5 +1,6 @@
 from django.db import models
 from userFolder.models import Account
+from recruiter.models import JobPost
 
 from github import Github
 import os
@@ -42,3 +43,8 @@ class RecordProcessToGetReco(models.Model):
 class TimeToGetCompatibilityScore(models.Model):
     process_to = models.CharField(max_length=255)
     char_count = models.CharField(max_length=255)
+
+
+class LogUserEngagement(models.Model):
+    jobpost = models.ForeignKey(JobPost, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True)
