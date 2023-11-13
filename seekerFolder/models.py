@@ -19,9 +19,10 @@ class AllProfile(models.Model):
     educational_attainment = models.CharField(
         max_length=255, null=True, blank=True)
 
-    emp_count = models.CharField(max_length=255, null=True, blank=True)
-    subsidiaries_count = models.CharField(
-        max_length=255, null=True, blank=True)
+    emp_count = models.IntegerField(
+        max_length=255, null=True, blank=True, default=0)
+    subsidiaries_count = models.IntegerField(
+        max_length=255, null=True, blank=True, default=0)
     comp_overview = models.CharField(max_length=255, null=True, blank=True)
     site_link = models.CharField(max_length=255, null=True, blank=True)
     gender = models.CharField(max_length=255, null=True, blank=True)

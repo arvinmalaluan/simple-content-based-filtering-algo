@@ -35,14 +35,9 @@ class GetDocuments(models.Model):
                                  "uploading an image", content)
 
 
-class RecordProcessToGetReco(models.Model):
-    process_to = models.CharField(max_length=255)
+class LogBook(models.Model):
     char_count = models.CharField(max_length=255)
-
-
-class TimeToGetCompatibilityScore(models.Model):
-    process_to = models.CharField(max_length=255)
-    char_count = models.CharField(max_length=255)
+    date = models.DateTimeField(auto_now_add=True)
 
 
 class LogUserEngagement(models.Model):

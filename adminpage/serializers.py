@@ -10,13 +10,7 @@ class GetDocuSerializer(serializers.ModelSerializer):
 
 class RPTGSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.RecordProcessToGetReco
-        fields = '__all__'
-
-
-class TTCScoreSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.TimeToGetCompatibilityScore
+        model = models.LogBook
         fields = '__all__'
 
 
