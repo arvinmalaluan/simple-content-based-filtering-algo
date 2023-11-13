@@ -8,7 +8,7 @@ class GetDocuSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class RPTGSerializer(serializers.ModelSerializer):
+class LogBookSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.LogBook
         fields = '__all__'

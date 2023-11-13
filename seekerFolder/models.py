@@ -20,9 +20,9 @@ class AllProfile(models.Model):
         max_length=255, null=True, blank=True)
 
     emp_count = models.IntegerField(
-        max_length=255, null=True, blank=True, default=0)
+        null=True, blank=True, default=0)
     subsidiaries_count = models.IntegerField(
-        max_length=255, null=True, blank=True, default=0)
+        null=True, blank=True, default=0)
     comp_overview = models.CharField(max_length=255, null=True, blank=True)
     site_link = models.CharField(max_length=255, null=True, blank=True)
     gender = models.CharField(max_length=255, null=True, blank=True)

@@ -4,8 +4,8 @@ from seekerFolder.models import Post, Comments
 from seekerFolder.serializers import PostSerializer, CommentsSerializer
 
 from rest_framework import generics
-from .models import GetDocuments, TimeToGetCompatibilityScore, RecordProcessToGetReco, LogUserEngagement
-from .serializers import GetDocuSerializer, TTCScoreSerializer, RPTGSerializer, LogUE
+from .models import GetDocuments, LogUserEngagement, LogBook
+from .serializers import GetDocuSerializer, LogBookSerializer, LogUE
 
 
 # ---> Start
@@ -24,14 +24,14 @@ class U_Documents(generics.RetrieveUpdateAPIView):
     serializer_class = GetDocuSerializer
 
 
-class G_TTGC(generics.ListCreateAPIView):
-    queryset = TimeToGetCompatibilityScore.objects.all()
-    serializer_class = TTCScoreSerializer
+class CreateLogBook(generics.ListCreateAPIView):
+    queryset = LogBook.objects.all()
+    serializer_class = LogBookSerializer
 
 
-class G_RPTG(generics.ListCreateAPIView):
-    queryset = RecordProcessToGetReco.objects.all()
-    serializer_class = RPTGSerializer
+class UpdateLogBook(generics.RetrieveUpdateAPIView):
+    queryset = LogBook.objects.all()
+    serializer_class = LogBookSerializer
 
 
 class G_Accounts(generics.ListCreateAPIView):
