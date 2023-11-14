@@ -15,4 +15,6 @@ urlpatterns = [
     # reports in pdf
     path('pdf/user-overview', views.get_useroverview),
     path('pdf/jobpost-insights', views.get_jobpost_insights),
+    path('pdf/resume-insights', views.get_resume_insights),
+    path('pdf/application-insights', views.get_application_insights),
 ]

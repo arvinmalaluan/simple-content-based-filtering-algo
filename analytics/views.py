@@ -1,4 +1,4 @@
-from .ml_model import provide_recommendation, provide_compatibility
+from .ml_model import provide_recommendation
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.db.models import Count
@@ -14,9 +14,6 @@ from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
 from reportlab.lib.styles import getSampleStyleSheet
 
-import matplotlib.pyplot as plt
-from PIL import Image as PilImage
-
 # Models
 from userFolder import models as uFModel
 from seekerFolder import models as sFModel
@@ -24,6 +21,8 @@ from recruiter import models as rFModel
 from chat.models import Messages
 
 from . import generate_charts
+from . import resume_insights
+from . import application_insights
 
 
 @api_view(['POST'])
@@ -447,3 +446,168 @@ def get_useroverview(request):
 
     # Return file
     return FileResponse(buf, as_attachment=True, filename='user-overview-report.pdf')
+
+
+@api_view(['GET'])
+def get_resume_insights(request):
+    report_type = request.GET.get('type')
+
+    # Create Bytestream buffer
+    buf = io.BytesIO()
+
+    # Create a SimpleDocTemplate
+    doc = SimpleDocTemplate(buf, pagesize=letter, rightMargin=inch,
+                            leftMargin=inch, topMargin=inch, bottomMargin=inch)
+
+    # Get a sample style
+    styles = getSampleStyleSheet()
+
+    # Create some Flowable objects
+    flowables = []
+
+    # Add the header
+    header = Paragraph(
+        "<font size=20><b>User Overview Report</b></font>")
+    subheader = Paragraph(
+        "<font size=12>Public Employment Service Office Generated Report</font>")
+    address = Paragraph(
+        "<font size=12>Lipa City, Batangas, Philippines 4200</font>")
+    contact = Paragraph(
+        "<font size=12>Tel. no. </font>")
+
+    flowables.append(header)
+    flowables.append(Spacer(1, 0.15 * inch))
+    flowables.append(subheader)
+    flowables.append(address)
+    flowables.append(contact)
+    flowables.append(Spacer(1, 0.25 * inch))
+
+    header = Paragraph(
+        "<font size=14><b>Resume Availability Distribution</b></font>")
+    flowables.append(header)
+    flowables.append(Spacer(1, 0.15 * inch))
+    img = resume_insights.extract_basic_count()
+    flowables.append(img)
+
+    flowables.append(Spacer(1, 0.3 * inch))
+
+    header = Paragraph(
+        "<font size=14><b>Shared Interests Among Job Seekers</b></font>")
+    flowables.append(header)
+    flowables.append(Spacer(1, 0.15 * inch))
+    img = resume_insights.extract_hobbies_interest()
+    flowables.append(img)
+
+    header = Paragraph(
+        "<font size=14><b>Commonly used words in Job Seekers' Resume Objective</b></font>")
+    flowables.append(PageBreak())
+    flowables.append(header)
+    flowables.append(Spacer(1, 0.15 * inch))
+    img = resume_insights.extract_resume_obj()
+    flowables.append(img)
+
+    flowables.append(Spacer(1, 0.3 * inch))
+
+    header = Paragraph(
+        "<font size=14><b>Commonly used words in Job Seekers' Skillsets</b></font>")
+    flowables.append(header)
+    flowables.append(Spacer(1, 0.15 * inch))
+    img = resume_insights.extract_skills()
+    flowables.append(img)
+
+    header = Paragraph(
+        "<font size=14><b>Standard Reference Contacts and Their Institutions</b></font>")
+    flowables.append(PageBreak())
+    flowables.append(header)
+    flowables.append(Spacer(1, 0.15 * inch))
+    img = resume_insights.extract_references()
+    img1 = img['img1']
+    flowables.append(img1)
+
+    img = resume_insights.extract_references()
+    img2 = img['img2']
+    flowables.append(img2)
+
+    # Build the PDF
+    doc.build(flowables)
+
+    buf.seek(0)
+
+    # Return file
+    return FileResponse(buf, as_attachment=True, filename='resume-report.pdf')
+
+
+@api_view(['GET'])
+def get_application_insights(request):
+    report_type = request.GET.get('type')
+
+    # Create Bytestream buffer
+    buf = io.BytesIO()
+
+    # Create a SimpleDocTemplate
+    doc = SimpleDocTemplate(buf, pagesize=letter, rightMargin=inch,
+                            leftMargin=inch, topMargin=inch, bottomMargin=inch)
+
+    # Get a sample style
+    styles = getSampleStyleSheet()
+
+    # Create some Flowable objects
+    flowables = []
+
+    # Add the header
+    header = Paragraph(
+        "<font size=20><b>User Overview Report</b></font>")
+    subheader = Paragraph(
+        "<font size=12>Public Employment Service Office Generated Report</font>")
+    address = Paragraph(
+        "<font size=12>Lipa City, Batangas, Philippines 4200</font>")
+    contact = Paragraph(
+        "<font size=12>Tel. no. </font>")
+
+    flowables.append(header)
+    flowables.append(Spacer(1, 0.15 * inch))
+    flowables.append(subheader)
+    flowables.append(address)
+    flowables.append(contact)
+    flowables.append(Spacer(1, 0.25 * inch))
+
+    header = Paragraph(
+        "<font size=14><b>Distribution of Application Status</b></font>")
+    flowables.append(header)
+    flowables.append(Spacer(1, 0.15 * inch))
+    img = application_insights.extract_status_insights()
+    flowables.append(img)
+
+    flowables.append(Spacer(1, 0.3 * inch))
+
+    header = Paragraph(
+        "<font size=14><b>Min Compatibility, Avg Compatibility, and Max Compatibility Score</b></font>")
+    flowables.append(header)
+    flowables.append(Spacer(1, 0.15 * inch))
+    img = application_insights.extract_compatibility()
+    flowables.append(img)
+
+    header = Paragraph(
+        "<font size=14><b>Avg Days from Applied to Interviewed and Hired</b></font>")
+    flowables.append(PageBreak())
+    flowables.append(header)
+    flowables.append(Spacer(1, 0.15 * inch))
+    img = application_insights.extract_applied_insights()
+    flowables.append(img)
+
+    flowables.append(Spacer(1, 0.3 * inch))
+
+    header = Paragraph(
+        "<font size=14><b>Average No. of Applicants for Each Job Post and Avg Application Count of Job Seeker</b></font>")
+    flowables.append(header)
+    flowables.append(Spacer(1, 0.15 * inch))
+    img = application_insights.extract_average_count()
+    flowables.append(img)
+
+    # Build the PDF
+    doc.build(flowables)
+
+    buf.seek(0)
+
+    # Return file
+    return FileResponse(buf, as_attachment=True, filename='application-report.pdf')
