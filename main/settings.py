@@ -22,9 +22,10 @@ ALLOWED_HOSTS = ['*']
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587  # Use the appropriate port for your SMTP server
-EMAIL_USE_TLS = True
 EMAIL_HOST_USER = '20-03723@g.batstate-u.edu.ph'
-EMAIL_HOST_PASSWORD = 'tkbqjmlkgpxkjlfg'
+EMAIL_HOST_PASSWORD = 'eziiqdjipiumuwbm'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 
 CORS_ALLOWED_ORIGINS = [
     'https://pesonet.online',
