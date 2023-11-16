@@ -24,8 +24,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587  # Use the appropriate port for your SMTP server
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = '20-03723@g.batstate-u.edu.ph'
-EMAIL_HOST_PASSWORD = 'Arvin_1401123'
-DEFAULT_FROM_EMAIL = 'webmaster@example.com'  # Sender's email address
+EMAIL_HOST_PASSWORD = 'tkbq jmlk gpxk jlfg'
 
 CORS_ALLOWED_ORIGINS = [
     'https://pesonet.online',
