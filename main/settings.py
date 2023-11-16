@@ -21,9 +21,9 @@ ALLOWED_HOSTS = ['*']
 # Email settings
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587  # Use the appropriate port for your SMTP server
+EMAIL_PORT = 587
 EMAIL_HOST_USER = '20-03723@g.batstate-u.edu.ph'
-EMAIL_HOST_PASSWORD = 'eziiqdjipiumuwbm'
+EMAIL_HOST_PASSWORD = 'rvvtgmkciffzddwi'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
