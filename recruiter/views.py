@@ -9,6 +9,8 @@ from seekerFolder import serializers
 from seekerFolder.models import AllProfile, Post, Resume
 from analytics import ml_model
 
+from adminpage import for_emailing
+
 
 class GP_JobPost(generics.ListCreateAPIView):
     queryset = models.JobPost.objects.prefetch_related('allprofile')
@@ -75,6 +77,38 @@ class UD_Apply(generics.RetrieveUpdateDestroyAPIView):
         custom_key = self.kwargs['custom_key']
         return get_object_or_404(models.Applicants, custom_key=custom_key)
 
+    def put(self, request, *args, **kwargs):
+        # This will print all the data passed in the PUT request
+
+        an = request.data['applicant']
+        jt = request.data['job']
+        st = request.data['status']
+
+        message = ""
+        if st == 'interviewed':
+            message = "Congratulations on completing your interview! Your effort and dedication are truly commendable. We appreciate your time and interest in our company. Rest assured, we will keep you updated and notify you promptly if any changes occur in the process. Thank you for your enthusiasm, and we look forward to the possibility of working together."
+        elif st == 'rejected':
+            message = "We appreciate your interest and effort throughout the interview process. After careful consideration, we regret to inform you that we have chosen not to move forward with your application at this time. We recognize the time and dedication you invested, and we genuinely thank you for your interest in our company. Please do not be disheartened, as opportunities may arise in the future. We wish you the best in your career endeavors, and thank you again for considering us as part of your professional journey."
+        elif st == 'hired':
+            message = "Congratulations! We are thrilled to inform you that you have been selected for the position. Your skills, experience, and positive attitude have set you apart, and we believe you will be a valuable addition to our team. Welcome aboard! Our HR department will be in touch shortly with the necessary onboarding details. We look forward to your contributions and success within our organization. Once again, congratulations on your well-deserved success!"
+
+        jti = models.JobPost.objects.get(id=jt)
+        ani = AllProfile.objects.get(account=an)
+
+        content = {
+            "comp_name": jti.allprofile.name,
+            "job_title": jti.job_title,
+            "name": ani.name,
+            "status": message
+        }
+
+        try:
+            for_emailing.send_email_status_update(content)
+        except Exception as e:
+            print('error:', e)
+
+        return super().put(request, *args, **kwargs)
+
 
 class GA_JobPostWApplicants(generics.ListCreateAPIView):
     serializer_class = serializer.JPSerializer
@@ -139,6 +173,15 @@ def handle_application(request):
             compatibility=compatibility,
             applied=applied
         )
+
+        content = {
+            "comp_name": job_instance.allprofile.name,
+            "name": allprofile_i.name,
+            "position": job_instance.job_title,
+            "app_date": applied
+        }
+
+        for_emailing.send_email_function(content)
 
         print(application)
     except Exception as e:
