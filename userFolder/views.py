@@ -59,7 +59,7 @@ def register(request):
 
     if serializer.is_valid():
         serializer.save()
-        return Response({'success': 1})
+        return Response({'success': 1, 'data': serializer.data})
 
     return Response({'success': 0, 'message': serializer.errors})
 

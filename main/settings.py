@@ -25,7 +25,6 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = '20-03723@g.batstate-u.edu.ph'
 EMAIL_HOST_PASSWORD = 'Arvin_1401123'
 EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
 
 CORS_ALLOWED_ORIGINS = [
     'https://pesonet.online',
