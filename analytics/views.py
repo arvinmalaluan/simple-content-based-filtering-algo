@@ -154,180 +154,6 @@ def stat_for_seekers(request):
 
 
 @api_view(['GET'])
-def get_resume_insights(request):
-    pass
-
-
-@api_view(['GET'])
-def get_jobpost_insights(request):
-    report_type = request.GET.get('type')
-
-    # Job Posting Summary Report
-    all_jobs_count = rFModel.JobPost.objects.all().count()
-    status_distribution = rFModel.JobPost.objects.values(
-        'status').annotate(count=Count('status'))
-    jobtitle_distribution = rFModel.JobPost.objects.values(
-        'job_title').annotate(count=Count('job_title'))
-    location_distribution = rFModel.JobPost.objects.values(
-        'location').annotate(count=Count('location'))
-    emp_type_distribution = rFModel.JobPost.objects.values(
-        'emp_type').annotate(count=Count('emp_type'))
-
-    # Create Bytestream buffer
-    buf = io.BytesIO()
-
-    # Create a SimpleDocTemplate
-    doc = SimpleDocTemplate(buf, pagesize=letter, rightMargin=inch,
-                            leftMargin=inch, topMargin=inch, bottomMargin=inch)
-
-    # Get a sample style
-    styles = getSampleStyleSheet()
-
-    # Create some Flowable objects
-    flowables = []
-
-    # Add the header
-    header = Paragraph(
-        "<font size=20><b>User Overview Report</b></font>")
-    subheader = Paragraph(
-        "<font size=12>Public Employment Service Office Generated Report</font>")
-    address = Paragraph(
-        "<font size=12>Lipa City, Batangas, Philippines 4200</font>")
-    contact = Paragraph(
-        "<font size=12>Tel. no. </font>")
-
-    flowables.append(header)
-    flowables.append(Spacer(1, 0.15 * inch))
-    flowables.append(subheader)
-    flowables.append(address)
-    flowables.append(contact)
-    flowables.append(Spacer(1, 0.25 * inch))
-
-    title = Paragraph(
-        "<font size=14><b>Job Posting Summary Report</b></font>")
-    flowables.append(title)
-    flowables.append(Spacer(1, 0.15 * inch))
-
-    body = Paragraph(
-        f"<font size=14>All Jobs: <b>{all_jobs_count}</b></font>")
-    flowables.append(body)
-    flowables.append(Spacer(1, 0.05 * inch))
-
-    label = [item['emp_type'] for item in emp_type_distribution]
-    value = [item['count'] for item in emp_type_distribution]
-
-    img = generate_charts.generate_pie_template(
-        label, value, "emp_type_chart")
-    flowables.append(img)
-    flowables.append(Spacer(1, 0.25 * inch))
-
-    label = [item['status'] for item in status_distribution]
-    value = [item['count'] for item in status_distribution]
-
-    img = generate_charts.generate_pie_template(
-        label, value, "status_chart")
-    flowables.append(img)
-    flowables.append(Spacer(1, 0.25 * inch))
-
-    body = Paragraph(
-        f"<font size=14><b>Job Positions and Their Counts</b></font>")
-    flowables.append(PageBreak())
-    flowables.append(body)
-    flowables.append(Spacer(1, 0.1 * inch))
-
-    label = [item['job_title'] for item in jobtitle_distribution]
-    value = [item['count'] for item in jobtitle_distribution]
-
-    img = generate_charts.generate_barh_template(
-        label, value, "jobtitle_dis", "Job Positions and Their Counts")
-    flowables.append(img)
-    flowables.append(Spacer(1, 0.25 * inch))
-
-    body = Paragraph(
-        f"<font size=14><b>Geographical Distribution of Job Openings</b></font>")
-    flowables.append(PageBreak())
-    flowables.append(body)
-    flowables.append(Spacer(1, 0.1 * inch))
-
-    label = [item['location'] for item in location_distribution]
-    value = [item['count'] for item in location_distribution]
-
-    img = generate_charts.generate_column_template(
-        label, value, "location_dis")
-    flowables.append(img)
-    flowables.append(Spacer(1, 0.25 * inch))
-
-    title = Paragraph(
-        "<font size=14><b>Skill and Qualification Analysis</b></font>")
-    flowables.append(PageBreak())
-    flowables.append(title)
-    flowables.append(Spacer(1, 0.2 * inch))
-
-    title = Paragraph(
-        "<font size=12><b>Unveiling the Top Keywords for In-Demand Skills in a Job Post</b></font>")
-    flowables.append(title)
-    flowables.append(Spacer(1, 0.15 * inch))
-
-    skills_data = rFModel.JobPost.objects.values_list('skills', flat=True)
-    skills_text = ' '.join(skills_data)
-
-    img = generate_charts.generate_word_cloud(skills_text, "skills-wc")
-    flowables.append(img)
-    flowables.append(Spacer(1, 0.2 * inch))
-
-    title = Paragraph(
-        "<font size=12><b>Unveiling the Top Keywords for Common Qualifications in a Job Post</b></font>")
-    flowables.append(title)
-    flowables.append(Spacer(1, 0.15 * inch))
-
-    qualif_data = rFModel.JobPost.objects.values_list(
-        'qualifications', flat=True)
-    qualif_text = ' '.join(qualif_data)
-
-    img = generate_charts.generate_word_cloud(qualif_text, "qualif-wc")
-    flowables.append(img)
-
-    title = Paragraph(
-        "<font size=14><b>Responsibilities and Benefits Analysis</b></font>")
-    flowables.append(PageBreak())
-    flowables.append(title)
-    flowables.append(Spacer(1, 0.2 * inch))
-
-    title = Paragraph(
-        "<font size=12><b>Unveiling the Top Keywords for Responsibilities in a Job Post</b></font>")
-    flowables.append(title)
-    flowables.append(Spacer(1, 0.15 * inch))
-
-    respon_data = rFModel.JobPost.objects.values_list(
-        'responsibilities', flat=True)
-    beneft_data = rFModel.JobPost.objects.values_list('benefits', flat=True)
-
-    respon_text = ' '.join(respon_data)
-    beneft_text = ' '.join(beneft_data)
-
-    img = generate_charts.generate_word_cloud(
-        respon_text, "responsibilities-wc")
-    flowables.append(img)
-    flowables.append(Spacer(1, 0.2 * inch))
-
-    title = Paragraph(
-        "<font size=12><b>Unveiling the Top Keywords for Benefits in a Job Post</b></font>")
-    flowables.append(title)
-    flowables.append(Spacer(1, 0.15 * inch))
-
-    img = generate_charts.generate_word_cloud(beneft_text, "benefits-wc")
-    flowables.append(img)
-
-    # Build the PDF
-    doc.build(flowables)
-
-    buf.seek(0)
-
-    # Return file
-    return FileResponse(buf, as_attachment=True, filename='job-insigths-report.pdf')
-
-
-@api_view(['GET'])
 def get_useroverview(request):
     report_type = request.GET.get('type')
 
@@ -611,3 +437,136 @@ def get_application_insights(request):
 
     # Return file
     return FileResponse(buf, as_attachment=True, filename='application-report.pdf')
+
+
+@api_view(['GET'])
+def get_jobpost_insights(request):
+    report_type = request.GET.get('type')
+    # Job Posting Summary Report
+    all_jobs_count = rFModel.JobPost.objects.all().count()
+    status_distribution = rFModel.JobPost.objects.values(
+        'status').annotate(count=Count('status'))
+    jobtitle_distribution = rFModel.JobPost.objects.values(
+        'job_title').annotate(count=Count('job_title'))
+    location_distribution = rFModel.JobPost.objects.values(
+        'location').annotate(count=Count('location'))
+    emp_type_distribution = rFModel.JobPost.objects.values(
+        'emp_type').annotate(count=Count('emp_type'))
+    # Create Bytestream buffer
+    buf = io.BytesIO()
+    # Create a SimpleDocTemplate
+    doc = SimpleDocTemplate(buf, pagesize=letter, rightMargin=inch,
+                            leftMargin=inch, topMargin=inch, bottomMargin=inch)
+    # Get a sample style
+    styles = getSampleStyleSheet()
+    # Create some Flowable objects
+    flowables = []
+    # Add the header
+    header = Paragraph(
+        "<font size=20><b>User Overview Report</b></font>")
+    subheader = Paragraph(
+        "<font size=12>Public Employment Service Office Generated Report</font>")
+    address = Paragraph(
+        "<font size=12>Lipa City, Batangas, Philippines 4200</font>")
+    contact = Paragraph(
+        "<font size=12>Tel. no. </font>")
+    flowables.append(header)
+    flowables.append(Spacer(1, 0.15 * inch))
+    flowables.append(subheader)
+    flowables.append(address)
+    flowables.append(contact)
+    flowables.append(Spacer(1, 0.25 * inch))
+    title = Paragraph(
+        "<font size=14><b>Job Posting Summary Report</b></font>")
+    flowables.append(title)
+    flowables.append(Spacer(1, 0.15 * inch))
+    body = Paragraph(
+        f"<font size=14>All Jobs: <b>{all_jobs_count}</b></font>")
+    flowables.append(body)
+    flowables.append(Spacer(1, 0.05 * inch))
+    label = [item['emp_type'] for item in emp_type_distribution]
+    value = [item['count'] for item in emp_type_distribution]
+    img = generate_charts.generate_pie_template(
+        label, value, "emp_type_chart")
+    flowables.append(img)
+    flowables.append(Spacer(1, 0.25 * inch))
+    label = [item['status'] for item in status_distribution]
+    value = [item['count'] for item in status_distribution]
+    img = generate_charts.generate_pie_template(
+        label, value, "status_chart")
+    flowables.append(img)
+    flowables.append(Spacer(1, 0.25 * inch))
+    body = Paragraph(
+        f"<font size=14><b>Job Positions and Their Counts</b></font>")
+    flowables.append(PageBreak())
+    flowables.append(body)
+    flowables.append(Spacer(1, 0.1 * inch))
+    label = [item['job_title'] for item in jobtitle_distribution]
+    value = [item['count'] for item in jobtitle_distribution]
+    img = generate_charts.generate_barh_template(
+        label, value, "jobtitle_dis", "Job Positions and Their Counts")
+    flowables.append(img)
+    flowables.append(Spacer(1, 0.25 * inch))
+    body = Paragraph(
+        f"<font size=14><b>Geographical Distribution of Job Openings</b></font>")
+    flowables.append(PageBreak())
+    flowables.append(body)
+    flowables.append(Spacer(1, 0.1 * inch))
+    label = [item['location'] for item in location_distribution]
+    value = [item['count'] for item in location_distribution]
+    img = generate_charts.generate_column_template(
+        label, value, "location_dis")
+    flowables.append(img)
+    flowables.append(Spacer(1, 0.25 * inch))
+    title = Paragraph(
+        "<font size=14><b>Skill and Qualification Analysis</b></font>")
+    flowables.append(PageBreak())
+    flowables.append(title)
+    flowables.append(Spacer(1, 0.2 * inch))
+    title = Paragraph(
+        "<font size=12><b>Unveiling the Top Keywords for In-Demand Skills in a Job Post</b></font>")
+    flowables.append(title)
+    flowables.append(Spacer(1, 0.15 * inch))
+    skills_data = rFModel.JobPost.objects.values_list('skills', flat=True)
+    skills_text = ' '.join(skills_data)
+    img = generate_charts.generate_word_cloud(skills_text, "skills-wc")
+    flowables.append(img)
+    flowables.append(Spacer(1, 0.2 * inch))
+    title = Paragraph(
+        "<font size=12><b>Unveiling the Top Keywords for Common Qualifications in a Job Post</b></font>")
+    flowables.append(title)
+    flowables.append(Spacer(1, 0.15 * inch))
+    qualif_data = rFModel.JobPost.objects.values_list(
+        'qualifications', flat=True)
+    qualif_text = ' '.join(qualif_data)
+    img = generate_charts.generate_word_cloud(qualif_text, "qualif-wc")
+    flowables.append(img)
+    title = Paragraph(
+        "<font size=14><b>Responsibilities and Benefits Analysis</b></font>")
+    flowables.append(PageBreak())
+    flowables.append(title)
+    flowables.append(Spacer(1, 0.2 * inch))
+    title = Paragraph(
+        "<font size=12><b>Unveiling the Top Keywords for Responsibilities in a Job Post</b></font>")
+    flowables.append(title)
+    flowables.append(Spacer(1, 0.15 * inch))
+    respon_data = rFModel.JobPost.objects.values_list(
+        'responsibilities', flat=True)
+    beneft_data = rFModel.JobPost.objects.values_list('benefits', flat=True)
+    respon_text = ' '.join(respon_data)
+    beneft_text = ' '.join(beneft_data)
+    img = generate_charts.generate_word_cloud(
+        respon_text, "responsibilities-wc")
+    flowables.append(img)
+    flowables.append(Spacer(1, 0.2 * inch))
+    title = Paragraph(
+        "<font size=12><b>Unveiling the Top Keywords for Benefits in a Job Post</b></font>")
+    flowables.append(title)
+    flowables.append(Spacer(1, 0.15 * inch))
+    img = generate_charts.generate_word_cloud(beneft_text, "benefits-wc")
+    flowables.append(img)
+    # Build the PDF
+    doc.build(flowables)
+    buf.seek(0)
+    # Return file
+    return FileResponse(buf, as_attachment=True, filename='job-insigths-report.pdf')

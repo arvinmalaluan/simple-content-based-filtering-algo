@@ -53,15 +53,38 @@ def login(request):
     return Response({'success': 0, 'message': 'invalid log in credential'})
 
 
+# @api_view(['POST'])
+# def register(request):
+#     serializer = UserAccountSerializer(data=request.data)
+
+#     if serializer.is_valid():
+#         serializer.save()
+#         return Response({'success': 1, 'data': serializer.data})
+
+#     return Response({'success': 0, 'message': serializer.errors})
+
+
 @api_view(['POST'])
 def register(request):
-    serializer = UserAccountSerializer(data=request.data)
+    if isinstance(request.data, list):  # Check if it's a list
+        serializers = [UserAccountSerializer(data=item) for item in request.data]
+        valid = all(serializer.is_valid() for serializer in serializers)
 
-    if serializer.is_valid():
-        serializer.save()
-        return Response({'success': 1, 'data': serializer.data})
+        if valid:
+            instances = [serializer.save() for serializer in serializers]
+            return Response({'success': 1, 'data': UserAccountSerializer(instances, many=True).data})
 
-    return Response({'success': 0, 'message': serializer.errors})
+        errors = [serializer.errors for serializer in serializers if not serializer.is_valid()]
+        return Response({'success': 0, 'message': errors})
+    else:
+        serializer = UserAccountSerializer(data=request.data)
+
+        if serializer.is_valid():
+            instance = serializer.save()
+            return Response({'success': 1, 'data': UserAccountSerializer(instance).data})
+
+        return Response({'success': 0, 'message': serializer.errors})
+
 
 
 @api_view(['POST'])
