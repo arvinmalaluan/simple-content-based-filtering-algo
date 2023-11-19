@@ -8,7 +8,7 @@ from datetime import datetime
 
 class GetDocuments(models.Model):
     fk_account = models.ForeignKey(
-        Account, on_delete=models.CASCADE, unique=True)
+        Account, on_delete=models.CASCADE)
     resume = models.FileField(upload_to='images/', blank=True, null=True)
     tor = models.FileField(upload_to='images/', blank=True, null=True)
     nbi = models.FileField(upload_to='images/', blank=True, null=True)
@@ -55,6 +55,7 @@ class GetDocuments(models.Model):
 
 class LogBook(models.Model):
     char_count = models.CharField(max_length=255)
+    about = models.CharField(max_length=255)
     date = models.DateTimeField(auto_now_add=True)
 
 

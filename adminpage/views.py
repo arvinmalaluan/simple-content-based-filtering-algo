@@ -8,6 +8,7 @@ from .models import GetDocuments, LogUserEngagement, LogBook
 from .serializers import GetDocuSerializer, LogBookSerializer, LogUE
 
 from django.shortcuts import get_object_or_404
+from . import for_emailing
 
 
 # ---> Start
@@ -69,3 +70,13 @@ class G_Comments(generics.ListCreateAPIView):
 class UD_Comments(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comments.objects.all()
     serializer_class = CommentsSerializer
+
+
+def send_invite(request):
+    content = {
+        "comp_name": request.data['comp_name'],
+        "name": request.data['name'],
+        "target": request.data['target']
+    }
+
+    for_emailing.send_invitations(content)

@@ -28,19 +28,18 @@ class AllProfile(models.Model):
     gender = models.CharField(max_length=255, null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
         image = str(self.photo)
 
-        if not image.startswith('images'):
+        if image and not image.startswith('images'):
             g = Github("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")
             repo = g.get_user().get_repo("github-as-static-assets-repository")
+
+            with open(self.photo.path, 'rb') as file:
+                content = file.read()
 
             # Create a new file name
             timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
             new_file_name = f"{self.fk.email.split('@')[0]}_photo_{timestamp}"
-
-            with open(self.photo.path, 'rb') as file:
-                content = file.read()
 
             # Upload the file with the new name
             repo.create_file("images/" + new_file_name,
