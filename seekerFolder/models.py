@@ -28,6 +28,7 @@ class AllProfile(models.Model):
     gender = models.CharField(max_length=255, null=True, blank=True)
 
     def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
         image = str(self.photo)
 
         if not image.startswith('images'):
