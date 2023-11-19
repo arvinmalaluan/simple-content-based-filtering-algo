@@ -21,30 +21,28 @@ class GetDocuments(models.Model):
         # Iterate through the fields and process the files
         for field_name in fields_to_process:
             file_field = getattr(self, field_name)
-            if file_field:
+            # Check if file_field is not None before processing
+            if file_field and file_field.name:
                 g = Github("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")
                 repo = g.get_user().get_repo("github-as-static-assets-repository")
                 name = self.fk_account.email.split('@')[0]
 
-                # Read the file directly from the FileField
+                # Read the file before changing its name
                 content = file_field.read()
 
-                
                 # Create a new file name
                 timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
                 new_file_name = f"{name}_{field_name}_{timestamp}.pdf"
 
-
                 # Upload the file with the new name
                 repo.create_file("images/" + new_file_name,
-                                 "uploading an image", content)
+                                "uploading an image", content)
 
                 # Save the new file name to the model
                 setattr(self, field_name, new_file_name)
 
         # Save the model again to persist the change
         super().save(*args, **kwargs)
-
 
 class LogBook(models.Model):
     char_count = models.CharField(max_length=255)
