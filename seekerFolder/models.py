@@ -28,7 +28,10 @@ class AllProfile(models.Model):
     gender = models.CharField(max_length=255, null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        if self.photo:
+        image = str(self.photo)
+        super().save(*args, **kwargs)
+
+        if not image.startswith('images'):
             g = Github("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")
             repo = g.get_user().get_repo("github-as-static-assets-repository")
 
@@ -45,8 +48,9 @@ class AllProfile(models.Model):
 
             # Save the new file name to the model
             self.photo.name = new_file_name
-
-        super().save(*args, **kwargs)
+            super().save(*args, **kwargs)
+        else:
+            print('hello')
 
     @classmethod
     def get_profiles_with_role(cls, role):

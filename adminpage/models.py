@@ -15,6 +15,12 @@ class GetDocuments(models.Model):
     psa = models.FileField(upload_to='images/', blank=True, null=True)
 
     def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # Initialize GitHub outside of the loop
+        g = Github("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")
+        repo = g.get_user().get_repo("github-as-static-assets-repository")
+
         # List of fields to process
         fields_to_process = ['resume', 'tor', 'nbi', 'psa']
 
@@ -23,26 +29,29 @@ class GetDocuments(models.Model):
             file_field = getattr(self, field_name)
             # Check if file_field is not None before processing
             if file_field and file_field.name:
-                g = Github("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")
-                repo = g.get_user().get_repo("github-as-static-assets-repository")
-                name = self.fk_account.email.split('@')[0]
+                try:
+                    name = self.fk_account.email.split('@')[0]
 
-                # Read the file before changing its name
-                content = file_field.read()
+                    # Read the file before changing its name
+                    content = file_field.read()
 
-                # Create a new file name
-                timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-                new_file_name = f"{name}_{field_name}_{timestamp}.pdf"
+                    # Create a new file name
+                    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+                    new_file_name = f"{name}_{field_name}_{timestamp}.pdf"
 
-                # Upload the file with the new name
-                repo.create_file("images/" + new_file_name,
-                                "uploading an image", content)
+                    # Upload the file with the new name
+                    repo.create_file("images/" + new_file_name,
+                                     "uploading an image", content)
 
-                # Save the new file name to the model
-                setattr(self, field_name, new_file_name)
+                    # Save the new file name to the model
+                    setattr(self, field_name, new_file_name)
+                except Exception as e:
+                    print(
+                        f"An error occurred while processing {field_name}: {e}")
 
         # Save the model again to persist the change
         super().save(*args, **kwargs)
+
 
 class LogBook(models.Model):
     char_count = models.CharField(max_length=255)
