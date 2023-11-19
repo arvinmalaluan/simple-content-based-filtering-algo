@@ -4,7 +4,6 @@ from recruiter.models import JobPost
 
 from github import Github
 from datetime import datetime
-import os
 
 
 class GetDocuments(models.Model):
@@ -26,18 +25,13 @@ class GetDocuments(models.Model):
             if file_field:
                 g = Github("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")
                 repo = g.get_user().get_repo("github-as-static-assets-repository")
-                file_path = file_field.path
-                file_name = os.path.basename(file_path)
+                name = self.fk_account.email.split('@')[0]
 
                 # Create a new file name
                 timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-                new_file_name = f"{self.fk_account.email}_{field_name}_{timestamp}"
+                new_file_name = f"{name}_{field_name}_{timestamp}"
 
-                # Rename the file
-                os.rename(file_path, os.path.join(
-                    os.path.dirname(file_path), new_file_name))
-
-                with open(file_path, 'rb') as file:
+                with open(file_field.path, 'rb') as file:
                     content = file.read()
 
                 # Upload the file with the new name

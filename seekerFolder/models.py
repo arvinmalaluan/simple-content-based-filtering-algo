@@ -3,7 +3,7 @@ from userFolder.models import Account
 
 from github import Github
 import base64
-import os
+from datetime import datetime
 
 
 class AllProfile(models.Model):
@@ -33,14 +33,23 @@ class AllProfile(models.Model):
         if self.photo:
             g = Github("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")
             repo = g.get_user().get_repo("github-as-static-assets-repository")
-            file_path = self.photo.path
-            file_name = os.path.basename(file_path)
 
-            with open(file_path, 'rb') as file:
+            # Create a new file name
+            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+            new_file_name = f"{self.fk.email.split('@')[0]}_photo_{timestamp}"
+
+            with open(self.photo.path, 'rb') as file:
                 content = file.read()
 
-            repo.create_file("images/" + file_name,
+            # Upload the file with the new name
+            repo.create_file("images/" + new_file_name,
                              "uploading an image", base64.b64encode(content))
+
+            # Save the new file name to the model
+            self.photo.name = new_file_name
+
+            # Save the model again to persist the change
+            super().save(*args, **kwargs)
 
     @classmethod
     def get_profiles_with_role(cls, role):
