@@ -26,12 +26,14 @@ class GetDocuments(models.Model):
                 repo = g.get_user().get_repo("github-as-static-assets-repository")
                 name = self.fk_account.email.split('@')[0]
 
+                # Read the file directly from the FileField
+                content = file_field.read()
+
+                
                 # Create a new file name
                 timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
                 new_file_name = f"{name}_{field_name}_{timestamp}.pdf"
 
-                # Read the file directly from the FileField
-                content = file_field.read()
 
                 # Upload the file with the new name
                 repo.create_file("images/" + new_file_name,
