@@ -15,7 +15,7 @@ urlpatterns = [
 
     # Storing Files
     path('files/', views.G_Documents.as_view()),
-    path('files/<int:pk>', views.U_Documents.as_view()),
+    path('files/<int:fk_account>', views.U_Documents.as_view()),
     path('increment-views', views.G_LUE.as_view()),
     path('create-log', views.CreateLogBook.as_view()),
     path('update-log', views.UpdateLogBook.as_view())

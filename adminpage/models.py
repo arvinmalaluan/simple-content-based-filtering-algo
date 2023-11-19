@@ -7,15 +7,14 @@ from datetime import datetime
 
 
 class GetDocuments(models.Model):
-    fk_account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    fk_account = models.ForeignKey(
+        Account, on_delete=models.CASCADE, unique=True)
     resume = models.FileField(upload_to='images/', blank=True, null=True)
     tor = models.FileField(upload_to='images/', blank=True, null=True)
     nbi = models.FileField(upload_to='images/', blank=True, null=True)
     psa = models.FileField(upload_to='images/', blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
         # List of fields to process
         fields_to_process = ['resume', 'tor', 'nbi', 'psa']
 
@@ -29,10 +28,10 @@ class GetDocuments(models.Model):
 
                 # Create a new file name
                 timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-                new_file_name = f"{name}_{field_name}_{timestamp}"
+                new_file_name = f"{name}_{field_name}_{timestamp}.pdf"
 
-                with open(file_field.path, 'rb') as file:
-                    content = file.read()
+                # Read the file directly from the FileField
+                content = file_field.read()
 
                 # Upload the file with the new name
                 repo.create_file("images/" + new_file_name,
@@ -41,8 +40,8 @@ class GetDocuments(models.Model):
                 # Save the new file name to the model
                 setattr(self, field_name, new_file_name)
 
-                # Save the model again to persist the change
-                super().save(*args, **kwargs)
+        # Save the model again to persist the change
+        super().save(*args, **kwargs)
 
 
 class LogBook(models.Model):

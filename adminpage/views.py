@@ -7,6 +7,8 @@ from rest_framework import generics
 from .models import GetDocuments, LogUserEngagement, LogBook
 from .serializers import GetDocuSerializer, LogBookSerializer, LogUE
 
+from django.shortcuts import get_object_or_404
+
 
 # ---> Start
 class G_Documents(generics.ListCreateAPIView):
@@ -22,6 +24,11 @@ class G_LUE(generics.ListCreateAPIView):
 class U_Documents(generics.RetrieveUpdateAPIView):
     queryset = GetDocuments.objects.all()
     serializer_class = GetDocuSerializer
+
+    def get_object(self):
+        fk_account = self.kwargs['fk_account']
+        print(fk_account)
+        return get_object_or_404(GetDocuments, fk_account_id=fk_account)
 
 
 class CreateLogBook(generics.ListCreateAPIView):
