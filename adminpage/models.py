@@ -3,6 +3,7 @@ from userFolder.models import Account
 from recruiter.models import JobPost
 
 from github import Github
+from datetime import datetime
 import os
 
 
@@ -28,11 +29,26 @@ class GetDocuments(models.Model):
                 file_path = file_field.path
                 file_name = os.path.basename(file_path)
 
+                # Create a new file name
+                timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+                new_file_name = f"{self.fk_account.email}_{field_name}_{timestamp}"
+
+                # Rename the file
+                os.rename(file_path, os.path.join(
+                    os.path.dirname(file_path), new_file_name))
+
                 with open(file_path, 'rb') as file:
                     content = file.read()
 
-                repo.create_file("images/" + file_name,
+                # Upload the file with the new name
+                repo.create_file("images/" + new_file_name,
                                  "uploading an image", content)
+
+                # Save the new file name to the model
+                setattr(self, field_name, new_file_name)
+
+                # Save the model again to persist the change
+                super().save(*args, **kwargs)
 
 
 class LogBook(models.Model):
