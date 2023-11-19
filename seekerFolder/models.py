@@ -29,10 +29,12 @@ class AllProfile(models.Model):
 
     def save(self, *args, **kwargs):
         image = str(self.photo)
+        super().save(*args, **kwargs)
+
+        g = Github("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")
+        repo = g.get_user().get_repo("github-as-static-assets-repository")
 
         if image and not image.startswith('images'):
-            g = Github("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")
-            repo = g.get_user().get_repo("github-as-static-assets-repository")
 
             with open(self.photo.path, 'rb') as file:
                 content = file.read()
