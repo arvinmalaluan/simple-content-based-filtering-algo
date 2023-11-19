@@ -18,14 +18,6 @@ DEBUG = 'RENDER' not in os.environ
 
 ALLOWED_HOSTS = ['*']
 
-# Email settings
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = '20-03723@g.batstate-u.edu.ph'
-EMAIL_HOST_PASSWORD = 'Arvin_1401123'
-EMAIL_USE_TLS = True
-
 CORS_ALLOWED_ORIGINS = [
     'https://pesonet.online',
     'http://localhost:5173/'
@@ -181,11 +173,12 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# for production
+# Email settings
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = '587'
+EMAIL_PORT = 587
 EMAIL_HOST_USER = 'malaluanofficial7@gmail.com'
-EMAIL_HOST_PASSWORD = 'Arvin_20-03723'
+EMAIL_HOST_PASSWORD = 'rzzapdppmtkqtiuq'
 EMAIL_USE_TLS = True
 
 # myaccount.google.com/lesssecureapps
