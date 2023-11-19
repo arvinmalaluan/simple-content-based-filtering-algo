@@ -99,7 +99,8 @@ class UD_Apply(generics.RetrieveUpdateDestroyAPIView):
             "comp_name": jti.allprofile.name,
             "job_title": jti.job_title,
             "name": ani.name,
-            "status": message
+            "status": message,
+            "target": ani.fk.email
         }
 
         try:
@@ -178,7 +179,8 @@ def handle_application(request):
             "comp_name": job_instance.allprofile.name,
             "name": allprofile_i.name,
             "position": job_instance.job_title,
-            "app_date": applied
+            "app_date": applied,
+            "target": job_instance.allprofile.fk.email
         }
 
         for_emailing.send_email_function(content)

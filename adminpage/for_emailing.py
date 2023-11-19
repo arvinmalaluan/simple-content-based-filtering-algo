@@ -11,6 +11,7 @@ def send_email_function(content):
     comp_name = content['comp_name']
     name = content['name']
     position = content['position']
+    target = content['recepient']
 
     datetime_str = content['app_date']
     dt = datetime.fromisoformat(datetime_str[:-6])
@@ -18,7 +19,7 @@ def send_email_function(content):
 
     subject = 'New Job Application Alert'
     from_email = ''
-    recipient_list = ['malaluanofficial7@gmail.com']
+    recipient_list = [target]
 
     html_content = """
     <!DOCTYPE html>
@@ -103,10 +104,11 @@ def send_email_status_update(content):
     job_title = content['job_title']
     name = content['name']
     status = content['status']
+    target = content['recepient']
 
     subject = 'Job Application Status Update'
     from_email = ''
-    recipient_list = ['malaluanofficial7@gmail.com']
+    recipient_list = [target]
 
     html_content = """
     <!DOCTYPE html>
