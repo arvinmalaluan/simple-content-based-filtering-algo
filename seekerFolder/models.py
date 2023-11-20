@@ -41,7 +41,7 @@ class AllProfile(models.Model):
 
             # Create a new file name
             timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-            new_file_name = f"{self.fk.email.split('@')[0]}_photo_{timestamp}"
+            new_file_name = f"images/{self.fk.email.split('@')[0]}_photo_{timestamp}"
 
             # Upload the file with the new name
             repo.create_file("images/" + new_file_name,
