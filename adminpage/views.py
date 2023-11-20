@@ -9,6 +9,8 @@ from .serializers import GetDocuSerializer, LogBookSerializer, LogUE
 
 from django.shortcuts import get_object_or_404
 from . import for_emailing
+from rest_framework.decorators import api_view
+from django.http import HttpResponse, JsonResponse
 
 
 # ---> Start
@@ -72,6 +74,7 @@ class UD_Comments(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CommentsSerializer
 
 
+@api_view(['POST'])
 def send_invite(request):
     comp = AllProfile.objects.get(account=request.data['comp_name'])
     name = AllProfile.objects.get(account=request.data['name'])
@@ -83,3 +86,5 @@ def send_invite(request):
     }
 
     for_emailing.send_invitations(content)
+
+    return JsonResponse({'success': 1})
