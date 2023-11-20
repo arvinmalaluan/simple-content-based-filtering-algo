@@ -1,6 +1,6 @@
 from userFolder import models, serializers
 
-from seekerFolder.models import Post, Comments
+from seekerFolder.models import Post, Comments, AllProfile
 from seekerFolder.serializers import PostSerializer, CommentsSerializer
 
 from rest_framework import generics
@@ -73,10 +73,13 @@ class UD_Comments(generics.RetrieveUpdateDestroyAPIView):
 
 
 def send_invite(request):
+    comp = AllProfile.objects.get(account=request.data['comp_name'])
+    name = AllProfile.objects.get(account=request.data['name'])
+
     content = {
-        "comp_name": request.data['comp_name'],
-        "name": request.data['name'],
-        "target": request.data['target']
+        "comp_name": comp.name,
+        "name": name.name,
+        "target": name.fk.email
     }
 
     for_emailing.send_invitations(content)
