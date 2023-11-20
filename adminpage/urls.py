@@ -18,5 +18,6 @@ urlpatterns = [
     path('files/<int:fk_account>', views.U_Documents.as_view()),
     path('increment-views', views.G_LUE.as_view()),
     path('create-log', views.CreateLogBook.as_view()),
-    path('update-log', views.UpdateLogBook.as_view())
+    path('update-log', views.UpdateLogBook.as_view()),
+    path('scout', views.send_invite),
 ]
