@@ -44,7 +44,7 @@ class AllProfile(models.Model):
             new_file_name = f"images/{self.fk.email.split('@')[0]}_photo_{timestamp}"
 
             # Upload the file with the new name
-            repo.create_file("images/" + new_file_name,
+            repo.create_file(new_file_name,
                              "uploading an image", base64.b64encode(content))
 
             # Save the new file name to the model
