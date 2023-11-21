@@ -20,4 +20,7 @@ urlpatterns = [
     path('create-log', views.CreateLogBook.as_view()),
     path('update-log', views.UpdateLogBook.as_view()),
     path('scout', views.send_invite),
+
+    # job recruiter
+    path('lower-stat', views.lower_stat),
 ]

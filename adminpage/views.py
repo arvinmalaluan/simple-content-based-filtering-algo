@@ -6,11 +6,15 @@ from seekerFolder.serializers import PostSerializer, CommentsSerializer
 from rest_framework import generics
 from .models import GetDocuments, LogUserEngagement, LogBook
 from .serializers import GetDocuSerializer, LogBookSerializer, LogUE
+from recruiter.models import Applicants
 
 from django.shortcuts import get_object_or_404
 from . import for_emailing
 from rest_framework.decorators import api_view
-from django.http import HttpResponse, JsonResponse
+from rest_framework.response import Response
+from django.http import JsonResponse
+from django.db.models import Count
+from django.utils import timezone
 
 
 # ---> Start
@@ -88,3 +92,38 @@ def send_invite(request):
     for_emailing.send_invitations(content)
 
     return JsonResponse({'success': 1})
+
+
+@api_view(['POST'])
+def lower_stat(request):
+    uid = request.data['uid']
+    jid = request.data['jid']
+
+    gender_distribution = AllProfile.objects.filter(fk__role__role="seeker").values(
+        'gender').annotate(count=Count('gender'))
+    print(gender_distribution)
+
+    today = timezone.now().date()
+    start_of_week = today - timezone.timedelta(days=today.weekday())
+    end_of_week = start_of_week + timezone.timedelta(days=6)  # Sunday
+
+    start_of_month = today.replace(day=1)
+    end_of_month = (start_of_month + timezone.timedelta(days=32)
+                    ).replace(day=1) - timezone.timedelta(days=1)
+
+    if Applicants.objects.filter(job__allprofile__account=uid).exists():
+        ji_today_count = Applicants.objects.filter(
+            job__allprofile__account=uid, interview__date=today
+        ).count() or 0
+
+        ji_this_week_count = Applicants.objects.filter(
+            job__allprofile__account=uid, interview__date__range=[
+                start_of_week, end_of_week]
+        ).count() or 0
+
+        ji_this_month_count = Applicants.objects.filter(
+            job__allprofile__account=uid, interview__date__range=[
+                start_of_month, end_of_month]
+        ).count() or 0
+
+    return Response({"success": 1, "gender": gender_distribution, "sched": {"today": ji_today_count, "week": ji_this_week_count, "month": ji_this_month_count}})
