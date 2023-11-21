@@ -20,7 +20,8 @@ ALLOWED_HOSTS = ['*']
 
 CORS_ALLOWED_ORIGINS = [
     'https://pesonet.online',
-    'http://localhost:5173/'
+    'http://localhost:5173/',
+    'https://cityvet-batangas.online/'
 ]
 
 INSTALLED_APPS = [
