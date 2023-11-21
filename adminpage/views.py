@@ -100,7 +100,7 @@ def lower_stat(request):
     jid = request.data['jid']
 
     gender_distribution = AllProfile.objects.filter(fk__role__role="seeker").values(
-        'gender').annotate(count=Count('gender'))
+        'gender').annotate(name=Count('gender'))
     print(gender_distribution)
 
     today = timezone.now().date()
@@ -126,4 +126,4 @@ def lower_stat(request):
                 start_of_month, end_of_month]
         ).count() or 0
 
-    return Response({"success": 1, "gender": gender_distribution, "sched": {"today": ji_today_count, "week": ji_this_week_count, "month": ji_this_month_count}})
+    return Response({"success": 1, "gender": gender_distribution, "sched": [{"name": "today", "count": ji_today_count}, {"name": "this week", "count": ji_this_week_count}, {"name": "this month", "count": ji_this_month_count}]})
