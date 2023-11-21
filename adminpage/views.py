@@ -7,7 +7,6 @@ from rest_framework import generics
 from .models import GetDocuments, LogUserEngagement, LogBook
 from .serializers import GetDocuSerializer, LogBookSerializer, LogUE
 from recruiter.models import Applicants
-from django.db.models import F, ExpressionWrapper, fields
 
 from django.shortcuts import get_object_or_404
 from . import for_emailing
@@ -100,9 +99,14 @@ def lower_stat(request):
     uid = request.data['uid']
     jid = request.data['jid']
 
-    gender_distribution = AllProfile.objects.filter(fk__role__role="seeker").values(
-        name=ExpressionWrapper(F('gender'), output_field=fields.CharField())
-    ).annotate(count=Count('gender'))
+    gender_distribution = AllProfile.objects.filter(fk__role__role="seeker").values('gender').annotate(count=Count('gender'))
+    new_distribution = list(gender_distribution)  # Convert QuerySet to list
+
+    # Rename 'gender' key to 'name'
+    for item in new_distribution:
+        item['name'] = item.pop('gender')
+
+    print(new_distribution)
 
     today = timezone.now().date()
     start_of_week = today - timezone.timedelta(days=today.weekday())
@@ -127,4 +131,4 @@ def lower_stat(request):
                 start_of_month, end_of_month]
         ).count() or 0
 
-    return Response({"success": 1, "gender": gender_distribution, "sched": [{"name": "today", "count": ji_today_count}, {"name": "this week", "count": ji_this_week_count}, {"name": "this month", "count": ji_this_month_count}]})
+    return Response({"success": 1, "gender": new_distribution, "sched": [{"name": "today", "count": ji_today_count}, {"name": "this week", "count": ji_this_week_count}, {"name": "this month", "count": ji_this_month_count}]})
