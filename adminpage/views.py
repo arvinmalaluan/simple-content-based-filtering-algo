@@ -7,6 +7,7 @@ from rest_framework import generics
 from .models import GetDocuments, LogUserEngagement, LogBook
 from .serializers import GetDocuSerializer, LogBookSerializer, LogUE
 from recruiter.models import Applicants
+from django.db.models import F, ExpressionWrapper, fields
 
 from django.shortcuts import get_object_or_404
 from . import for_emailing
@@ -100,8 +101,8 @@ def lower_stat(request):
     jid = request.data['jid']
 
     gender_distribution = AllProfile.objects.filter(fk__role__role="seeker").values(
-        'gender').annotate(name=Count('gender'))
-    print(gender_distribution)
+        name=ExpressionWrapper(F('gender'), output_field=fields.CharField())
+    ).annotate(count=Count('gender'))
 
     today = timezone.now().date()
     start_of_week = today - timezone.timedelta(days=today.weekday())
