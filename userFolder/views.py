@@ -80,6 +80,8 @@ def register(request):
                 "target": request.data['email']
             }
 
+            print(request.data['email'])
+
             for_emailing.send_welcome_message(content)
 
             return Response({'success': 1, 'data': UserAccountSerializer(instances, many=True).data})
