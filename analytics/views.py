@@ -4,8 +4,7 @@ from rest_framework.decorators import api_view
 from django.db.models import Count
 
 from django.utils import timezone
-from datetime import timedelta
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from django.http import FileResponse
 import io
@@ -570,3 +569,73 @@ def get_jobpost_insights(request):
     buf.seek(0)
     # Return file
     return FileResponse(buf, as_attachment=True, filename='job-insigths-report.pdf')
+
+
+@api_view(['GET'])
+def count_pending(request):
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=6)
+
+    pending_counts = uFModel.Account.objects.filter(
+        created__range=(start_date, end_date),
+        status='pending',
+        role__role="recruiter"
+    ).values('created__date').annotate(count=Count('created__date')).order_by()
+
+    # Create a dictionary to store dates and their respective counts
+    day_counts = [{"date": item['created__date'].strftime(
+        '%Y-%m-%d'), "count": item['count']} for item in pending_counts]
+
+    # Create a set of existing dates
+    existing_dates = {item['date'] for item in day_counts}
+
+    # Fill in missing dates with count 0
+    for i in range(7):
+        date = (end_date - timedelta(days=i)).date()
+        formatted_date = date.strftime('%Y-%m-%d')
+        if formatted_date not in existing_dates:
+            day_counts.append({"date": formatted_date, "count": 0})
+
+    # Sort the list by date
+    day_counts = sorted(day_counts, key=lambda x: x['date'])
+
+    return Response({"data": day_counts})
+
+
+@api_view(['POST'])
+def jobtitle_distribution(request):
+    type = request.data['type']
+    end_date = datetime.now()
+
+    if type == 'week':
+        start_date = end_date - timedelta(weeks=1)
+    elif type == 'month':
+        start_date = end_date - timedelta(weeks=4)
+    elif type == 'year':
+        start_date = end_date - timedelta(weeks=52)
+    else:
+        return "Invalid type. Please choose from 'week', 'month', or 'year'."
+
+    jobtitle_distribution = rFModel.JobPost.objects.filter(
+        created__range=(start_date, end_date)
+    ).values('job_title').annotate(count=Count('job_title')).order_by()
+
+    # Create a dictionary to store dates and their respective counts
+    jobs = [{"name": item['job_title'], "count": item['count']}
+            for item in jobtitle_distribution]
+
+    return Response(jobs)
+
+
+@api_view(['GET'])
+def get_gender_dis(request):
+
+    gender_distribution = sFModel.AllProfile.objects.filter(
+        fk__role__role="seeker").values('gender').annotate(count=Count('gender'))
+    new_distribution = list(gender_distribution)  # Convert QuerySet to list
+
+    # Rename 'gender' key to 'name'
+    for item in new_distribution:
+        item['name'] = item.pop('gender')
+
+    return Response({"success": 1, "gender": new_distribution})

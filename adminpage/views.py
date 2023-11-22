@@ -99,14 +99,13 @@ def lower_stat(request):
     uid = request.data['uid']
     jid = request.data['jid']
 
-    gender_distribution = AllProfile.objects.filter(fk__role__role="seeker").values('gender').annotate(count=Count('gender'))
+    gender_distribution = AllProfile.objects.filter(
+        fk__role__role="seeker").values('gender').annotate(count=Count('gender'))
     new_distribution = list(gender_distribution)  # Convert QuerySet to list
 
     # Rename 'gender' key to 'name'
     for item in new_distribution:
         item['name'] = item.pop('gender')
-
-    print(new_distribution)
 
     today = timezone.now().date()
     start_of_week = today - timezone.timedelta(days=today.weekday())

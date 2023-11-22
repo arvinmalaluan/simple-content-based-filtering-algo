@@ -17,4 +17,9 @@ urlpatterns = [
     path('pdf/jobpost-insights', views.get_jobpost_insights),
     path('pdf/resume-insights', views.get_resume_insights),
     path('pdf/application-insights', views.get_application_insights),
+
+    path('admin/stat', views.count_pending),
+    path('admin/job_titles', views.jobtitle_distribution),
+    path('admin/gender_dis', views.get_gender_dis),
+
 ]
