@@ -171,9 +171,9 @@ def get_useroverview(request):
 
     # Add the header
     header = Paragraph(
-        "<font size=20><b>User Overview Report</b></font>")
+        "<font size=20><b>User Overview Report </b></font>")
     subheader = Paragraph(
-        "<font size=12>Public Employment Service Office Generated Report</font>")
+        f"<font size=12>Public Employment Service Office Generated Report (for the {report_type})</font>")
     address = Paragraph(
         "<font size=12>Lipa City, Batangas, Philippines 4200</font>")
     contact = Paragraph(
@@ -186,8 +186,22 @@ def get_useroverview(request):
     flowables.append(contact)
     flowables.append(Spacer(1, 0.25 * inch))
 
-    newget = uFModel.Account.objects.values(
-        'role__role').annotate(count=Count('role'))
+    # Filter data based on report_type
+    if report_type == 'week':
+        start_date = datetime.now(timezone.utc) - timedelta(days=7)
+    elif report_type == 'month':
+        start_date = datetime.now(timezone.utc) - timedelta(days=30)
+    elif report_type == 'year':
+        start_date = datetime.now(timezone.utc) - timedelta(days=365)
+    else:
+        start_date = None
+
+    if start_date is not None:
+        newget = uFModel.Account.objects.filter(created__gte=start_date).values(
+            'role__role').annotate(count=Count('role'))
+    else:
+        newget = uFModel.Account.objects.values(
+            'role__role').annotate(count=Count('role'))
 
     no_profile_header = Paragraph(
         "<font size=14><b>User Distribution by Role</b></font>")
@@ -292,9 +306,9 @@ def get_resume_insights(request):
 
     # Add the header
     header = Paragraph(
-        "<font size=20><b>User Overview Report</b></font>")
+        "<font size=20><b>Resume Insights Report</b></font>")
     subheader = Paragraph(
-        "<font size=12>Public Employment Service Office Generated Report</font>")
+        f"<font size=12>Public Employment Service Office Generated Report (for the {report_type})</font>")
     address = Paragraph(
         "<font size=12>Lipa City, Batangas, Philippines 4200</font>")
     contact = Paragraph(
@@ -381,9 +395,9 @@ def get_application_insights(request):
 
     # Add the header
     header = Paragraph(
-        "<font size=20><b>User Overview Report</b></font>")
+        "<font size=20><b>Application Insights Report</b></font>")
     subheader = Paragraph(
-        "<font size=12>Public Employment Service Office Generated Report</font>")
+        f"<font size=12>Public Employment Service Office Generated Report (for the {report_type})</font>")
     address = Paragraph(
         "<font size=12>Lipa City, Batangas, Philippines 4200</font>")
     contact = Paragraph(
@@ -396,11 +410,21 @@ def get_application_insights(request):
     flowables.append(contact)
     flowables.append(Spacer(1, 0.25 * inch))
 
+    # Filter data based on report_type
+    if report_type == 'week':
+        start_date = datetime.now(timezone.utc) - timedelta(days=7)
+    elif report_type == 'month':
+        start_date = datetime.now(timezone.utc) - timedelta(days=30)
+    elif report_type == 'year':
+        start_date = datetime.now(timezone.utc) - timedelta(days=365)
+    else:
+        start_date = None
+
     header = Paragraph(
         "<font size=14><b>Distribution of Application Status</b></font>")
     flowables.append(header)
     flowables.append(Spacer(1, 0.15 * inch))
-    img = application_insights.extract_status_insights()
+    img = application_insights.extract_status_insights(start_date)
     flowables.append(img)
 
     flowables.append(Spacer(1, 0.3 * inch))
@@ -409,7 +433,7 @@ def get_application_insights(request):
         "<font size=14><b>Min Compatibility, Avg Compatibility, and Max Compatibility Score</b></font>")
     flowables.append(header)
     flowables.append(Spacer(1, 0.15 * inch))
-    img = application_insights.extract_compatibility()
+    img = application_insights.extract_compatibility(start_date)
     flowables.append(img)
 
     header = Paragraph(
@@ -417,7 +441,7 @@ def get_application_insights(request):
     flowables.append(PageBreak())
     flowables.append(header)
     flowables.append(Spacer(1, 0.15 * inch))
-    img = application_insights.extract_applied_insights()
+    img = application_insights.extract_applied_insights(start_date)
     flowables.append(img)
 
     flowables.append(Spacer(1, 0.3 * inch))
@@ -442,15 +466,38 @@ def get_application_insights(request):
 def get_jobpost_insights(request):
     report_type = request.GET.get('type')
     # Job Posting Summary Report
-    all_jobs_count = rFModel.JobPost.objects.all().count()
-    status_distribution = rFModel.JobPost.objects.values(
-        'status').annotate(count=Count('status'))
-    jobtitle_distribution = rFModel.JobPost.objects.values(
-        'job_title').annotate(count=Count('job_title'))
-    location_distribution = rFModel.JobPost.objects.values(
-        'location').annotate(count=Count('location'))
-    emp_type_distribution = rFModel.JobPost.objects.values(
-        'emp_type').annotate(count=Count('emp_type'))
+
+    if report_type == 'week':
+        start_date = datetime.now(timezone.utc) - timedelta(days=7)
+    elif report_type == 'month':
+        start_date = datetime.now(timezone.utc) - timedelta(days=30)
+    elif report_type == 'year':
+        start_date = datetime.now(timezone.utc) - timedelta(days=365)
+    else:
+        start_date = None
+
+    if start_date is not None:
+        all_jobs_count = rFModel.JobPost.objects.filter(
+            created__gte=start_date).count()
+        status_distribution = rFModel.JobPost.objects.filter(created__gte=start_date).values(
+            'status').annotate(count=Count('status'))
+        jobtitle_distribution = rFModel.JobPost.objects.filter(created__gte=start_date).values(
+            'job_title').annotate(count=Count('job_title'))
+        location_distribution = rFModel.JobPost.objects.filter(created__gte=start_date).values(
+            'location').annotate(count=Count('location'))
+        emp_type_distribution = rFModel.JobPost.objects.filter(created__gte=start_date).values(
+            'emp_type').annotate(count=Count('emp_type'))
+    else:
+        all_jobs_count = rFModel.JobPost.objects.all().count()
+        status_distribution = rFModel.JobPost.objects.values(
+            'status').annotate(count=Count('status'))
+        jobtitle_distribution = rFModel.JobPost.objects.values(
+            'job_title').annotate(count=Count('job_title'))
+        location_distribution = rFModel.JobPost.objects.values(
+            'location').annotate(count=Count('location'))
+        emp_type_distribution = rFModel.JobPost.objects.values(
+            'emp_type').annotate(count=Count('emp_type'))
+
     # Create Bytestream buffer
     buf = io.BytesIO()
     # Create a SimpleDocTemplate
@@ -462,9 +509,9 @@ def get_jobpost_insights(request):
     flowables = []
     # Add the header
     header = Paragraph(
-        "<font size=20><b>User Overview Report</b></font>")
+        "<font size=20><b>Job Post Report</b></font>")
     subheader = Paragraph(
-        "<font size=12>Public Employment Service Office Generated Report</font>")
+        f"<font size=12>Public Employment Service Office Generated Report (for the {report_type})</font>")
     address = Paragraph(
         "<font size=12>Lipa City, Batangas, Philippines 4200</font>")
     contact = Paragraph(

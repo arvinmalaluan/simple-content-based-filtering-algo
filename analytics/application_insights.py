@@ -6,8 +6,13 @@ from django.db.models import Count
 from collections import Counter
 
 
-def extract_applied_insights():
-    applied = rfm.Applicants.objects.values('applied')
+def extract_applied_insights(start_date):
+    if start_date is not None:
+        applied = rfm.Applicants.objects.filter(applied__gte=start_date).exclude(
+            applied__isnull=True).values('applied')
+    else:
+        applied = rfm.Applicants.objects.values('applied')
+
     interview = rfm.Applicants.objects.values('interview')
     hire = rfm.Applicants.objects.values('hire')
 
@@ -42,9 +47,13 @@ def extract_applied_insights():
     return img
 
 
-def extract_status_insights():
-    status = rfm.Applicants.objects.values(
-        'status').annotate(count=Count('status'))
+def extract_status_insights(start_date):
+    if start_date is not None:
+        status = rfm.Applicants.objects.filter(applied__gte=start_date).exclude(applied__isnull=True).values(
+            'status').annotate(count=Count('status'))
+    else:
+        status = rfm.Applicants.objects.values(
+            'status').annotate(count=Count('status'))
 
     pie_labels = [item['status'] for item in status]
     pie_values = [item['count'] for item in status]
@@ -76,8 +85,12 @@ def extract_average_count():
     return img
 
 
-def extract_compatibility():
-    compatibility = rfm.Applicants.objects.values('compatibility')
+def extract_compatibility(start_date):
+    if start_date is not None:
+        compatibility = rfm.Applicants.objects.filter(
+            applied__gte=start_date).values('compatibility')
+    else:
+        compatibility = rfm.Applicants.objects.values('compatibility')
 
     # Replace 'Unsuccessful' with 0 and convert to float
     compatibility_values = [float(item['compatibility']) if item['compatibility']
