@@ -102,13 +102,13 @@ ASGI_APPLICATION = 'main.asgi.application'
 # }
 
 # # For pushing changes to the render backend
-DATABASES = {
-    'default': dj_database_url.parse("postgres://peso_db_user:z9KfPu37AJciGnNM10brN9Z32OWEikad@dpg-cl2e99quuipc73d5bs5g-a.oregon-postgres.render.com/peso_db")
-}
-
 # DATABASES = {
-#     'default': dj_database_url.parse("postgres://peso_db_user:z9KfPu37AJciGnNM10brN9Z32OWEikad@dpg-cl2e99quuipc73d5bs5g-a/peso_db")
+#     'default': dj_database_url.parse("postgres://peso_db_user:z9KfPu37AJciGnNM10brN9Z32OWEikad@dpg-cl2e99quuipc73d5bs5g-a.oregon-postgres.render.com/peso_db")
 # }
+
+DATABASES = {
+    'default': dj_database_url.parse("postgres://peso_db_user:z9KfPu37AJciGnNM10brN9Z32OWEikad@dpg-cl2e99quuipc73d5bs5g-a/peso_db")
+}
 
 CHANNEL_LAYERS = {
     "default": {
