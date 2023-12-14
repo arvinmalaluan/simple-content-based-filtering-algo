@@ -31,7 +31,7 @@ class AllProfile(models.Model):
         image = str(self.photo)
         super().save(*args, **kwargs)
 
-        g = Github("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")
+        g = Github("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")
         repo = g.get_user().get_repo("github-as-static-assets-repository")
 
         if image and not image.startswith('images'):

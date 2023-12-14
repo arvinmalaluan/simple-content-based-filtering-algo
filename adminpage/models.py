@@ -18,7 +18,7 @@ class GetDocuments(models.Model):
         super().save(*args, **kwargs)
 
         # Initialize GitHub outside of the loop
-        g = Github("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")
+        g = Github("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")
         repo = g.get_user().get_repo("github-as-static-assets-repository")
 
         # List of fields to process
