@@ -348,3 +348,83 @@ def send_welcome_message(content):
     email.content_subtype = 'html'
     email.body = html_content
     email.send()
+
+
+def send_notice(content):
+    label_if_application = "Welcome to PESO Agency!"
+    target = content['target']
+    name = content['name']
+
+    subject = 'Congratulations! We already finished assessing your resume'
+    from_email = ''
+    recipient_list = [target]
+
+    html_content = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{
+                    margin: 0;
+                    padding: 0;
+                    background-color: #f4f4f4;
+                }}
+                .container {{
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }}
+                table {{
+                    margin: auto;
+                    width: 70%;
+                    border-collapse: collapse;
+                }}
+                td {{
+                    padding: 5px 0 5px;
+                }}
+
+                p {{
+                    margin: 4px 0;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <table>
+                    <tr>
+                        <td style="width: 45px;"><img src="https://rec-data.kalibrr.com/www.kalibrr.com/logos/Q9M85F9CS374JN5XP4ECK8K7D4FJKVXE5Z6KS7AH-5ef55667.png" alt="peso-logo" width="32" height="32"></td>
+                        <td style="width: auto; font-size: 20px">PESO Agency</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0 32px; width: auto; font-size: 16px;" colspan="2">{}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 45px;"></td>
+                        <td style="width: auto;">
+                            <p>Dear <b>{}</b>,</p>
+
+                            <br />
+                            <p>
+                                I’m pleased to inform you that your resume has been successfully processed and assessed. Based on your skillsets, we will recommend suitable positions for you to apply to. Please open your account to recieve your recommendations. 
+                            </p>
+                            
+                            <br />
+                            <p>In addition to processing your resume, please be informed that your resume will be made public to job recruiters. This means your resume will be included in the pool of applicants, increasing your visibility to potential employers. We believe this will enhance your chances of finding a position that matches your skillsets. Thank you for using our service.</p>
+
+
+                            <br />
+                            <p>Best regards,</p>
+                            <p><b>PES0 Lipa Agency</b></p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </body>
+        </html>
+        """.format(label_if_application, name)
+
+    email = EmailMessage(subject, '', from_email, recipient_list)
+    email.content_subtype = 'html'
+    email.body = html_content
+    email.send()

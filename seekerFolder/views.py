@@ -17,6 +17,8 @@ from django.http import JsonResponse
 from userFolder.models import Account
 from chat.models import Messages
 
+from adminpage import for_emailing
+
 
 class PostList(generics.ListCreateAPIView):
     queryset = Post.objects.all()
@@ -31,6 +33,26 @@ class Comment(generics.ListCreateAPIView):
 class ResumePost(generics.ListCreateAPIView):
     queryset = Resume.objects.all()
     serializer_class = ResumeSerializer
+
+    def post(self, request, *args, **kwargs):
+        try:
+            payload = request.data
+            name = payload.get('fullname', None)
+            email = payload.get('email_address', None)
+
+            content = {
+                "target": email,
+                "name": name
+            }
+
+            for_emailing.send_notice(content=content)
+
+            print(name, email)
+
+        except Exception as e:
+            print(f"Error: {e}")
+
+        return super().post(request, *args, **kwargs)
 
 
 class ProfilePost(generics.ListCreateAPIView):
