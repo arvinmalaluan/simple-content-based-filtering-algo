@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-sj&t12cq^!pqkmj!w75)_s6$xj&zyu#$v9n=$f63%r4rot&%o2
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-CORS_ALLOWED_ORIGINS = ["*"]
+CORS_ALLOWED_ORIGINS = ["https://peso-lipa-frontend-testing.onrender.com", "http://localhost:5173"]
 
 
 # Application definition
@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'cbf_app'
+    'cbf_app',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [

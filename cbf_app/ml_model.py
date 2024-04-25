@@ -45,9 +45,8 @@ def provide_recommendation(input_skills):
 
     for job in job_indices_scores:
         job_title = job['Job Title']
-        compatibility_score = job.get('Compatibility Score', 0.0)  # Handle missing score gracefully
 
-        if job_title not in seen and compatibility_score != 0.0:
+        if job_title not in seen:
             job_indices_scores_no_duplicates.append(job)
             seen.add(job_title)
 
