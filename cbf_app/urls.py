@@ -3,5 +3,5 @@ from . import views
 
 urlpatterns = [
   path('jobpost', views.provide_compatible_jobs),
-  path('compatibiltiy', views.provide_compatibility),
+  path('compatibility', views.provide_compatibility),
 ]
